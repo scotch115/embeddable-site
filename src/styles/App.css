@@ -4,9 +4,12 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  top: 10%;
+  /* top: 15%; */
   min-height: 100vh;
   padding-bottom: 100px;
+  animation: fadeInAnimation ease 2s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
 }
 
 .p-slider {
@@ -22,4 +25,20 @@
   flex-wrap: wrap;
   display: inline-flex;
   justify-content: center;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 45%;
+}
+
+
+@keyframes fadeInAnimation {
+  0% {
+      opacity: 0;
+  }
+  100% {
+      opacity: 1;
+  }
 }
