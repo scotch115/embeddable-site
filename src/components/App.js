@@ -47,15 +47,13 @@ const App = () => {
       filterURL(value);
       setPosition(1);
       setValidURL(true);
-      console.log('google doc');
     } else if (value && value.includes('sheets.google.com')) {
       setHeader('Google Sheet');
       filterURL(value);
       setPosition(1);
       setValidURL(true);
-      console.log('google sheets');
     } else if (value !== '' && value.includes('.com') && !value.includes('docs.google.com' || 'sheets.google.com')) {
-      setHeader('Please enter a valid google forms or google sheets url');
+      setHeader('Please enter a valid Google Docs or Google Sheets Embed Link');
       setValidURL(false);
       setPosition(20);
     } else {
@@ -128,7 +126,9 @@ const App = () => {
       >
         This website allows you to input a Google Docs or Google Sheets embed link, and change the width and height of the embed. <br />
         After you have selected your desired width and height, you can copy the generated HTML text to use as you like. <br /> <br />
-        The default size is 800x1100 (in terms of pixels).
+        The default size is 800x1100 (in terms of pixels). <br /><br />
+
+        For help with creating an embed link, click <span onClick={() => window.open('https://support.google.com/docs/answer/183965#embed_files&zippy=%2Cembed-a-document-spreadsheet-or-presentation', '_blank')} style={{ textDecoration: 'none', color: 'blue', cursor: 'pointer' }}>here</span>. 
       </Dialog>
       <Dialog
         visible={sponsor}
