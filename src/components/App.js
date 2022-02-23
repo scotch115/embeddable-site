@@ -5,7 +5,7 @@ import { Slider } from 'primereact/slider';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.css';
-import './App.css';
+import '../styles/App.css';
 
 const App = () => {
   const [value, setValue] = useState('');
@@ -60,8 +60,8 @@ const App = () => {
               <Slider
                 value={sliderWidth}
                 onChange={(e) => {setSliderWidth(e.value)}}
-                min={100} 
-                max={1000}
+                min={300} 
+                max={1500}
                 step={10} 
               />
               <h5> Height: {sliderHeight} </h5>
@@ -69,7 +69,7 @@ const App = () => {
                 value={sliderHeight}
                 onChange={(e) => {setSliderHeight(e.value)}}
                 min={100}
-                max={1000}
+                max={2000}
                 step={10} 
               />
               <br />
