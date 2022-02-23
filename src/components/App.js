@@ -56,6 +56,10 @@ const App = () => {
       setHeader('Please enter a valid Google Docs or Google Sheets Embed Link');
       setValidURL(false);
       setPosition(20);
+    } else if (value && value.includes('.net') || value.includes('.org') || value.includes('.io' ) || value.includes('.gov') || value.includes('.edu') || value.includes('.app') || value.includes('.so') || value.includes('.me')) {
+      setHeader('Please enter a valid Google Docs or Google Sheets Embed Link');
+      setValidURL(false);
+      setPosition(20);
     } else {
       setHeader('Enter a Google Docs or Sheets Embed Link');
       setValidURL(false);
