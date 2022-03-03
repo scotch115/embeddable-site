@@ -1,15 +1,43 @@
 .App {
-  display: flexbox;
+  display: block;
   text-align: center;
   align-items: center;
   justify-content: center;
   position: relative;
-  /* top: 15%; */
+  height: 100%;
+  top: 20vw;
   min-height: 100vh;
   padding-bottom: 100px;
   animation: fadeInAnimation ease 2s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
+  transition: top 1s ease-in-out;
+}
+
+#header {
+  color: black;
+  transition: color .2s ease-in-out;
+}
+
+.inputArea {
+  display: inline-flex;
+  justify-content: space-between;
+  width: 310px;
+  transition: width 1.5s ease;
+}
+
+.valid {
+  width: 365px;
+}
+
+.copybutton {
+  transition: opacity 0.5s ease-in-out;
+  opacity: 1;
+}
+
+.copybutton.hide {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .p-slider {
@@ -21,10 +49,11 @@
 }
 
 .generatedLink {
-  width: 50vw;
+  width: 90%;
   flex-wrap: wrap;
   display: inline-flex;
   justify-content: center;
+  overflow-wrap: anywhere;
 }
 
 .footer {

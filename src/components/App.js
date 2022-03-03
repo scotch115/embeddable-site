@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Slider } from 'primereact/slider';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
+import { SpeedDial } from 'primereact/speeddial';
 import { Card } from 'primereact/card';
+import { Toast } from 'primereact/toast';
+import { Tooltip } from 'primereact/tooltip';
+import YouTubeEmbed from './YouTubeEmbed';
 
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
@@ -11,6 +15,8 @@ import 'primereact/resources/primereact.css';
 import '../styles/App.css';
 
 const App = () => {
+  const ref = useRef(null);
+  const toast = useRef(null);
   const [value, setValue] = useState('');
   const [sliderWidth, setSliderWidth] = useState(800);
   const [sliderHeight, setSliderHeight] = useState(1100);
@@ -19,6 +25,7 @@ const App = () => {
   const [dialog, setDialog] = useState(false);
   const [sponsor, setSponsor] = useState(false);
   const [position, setPosition] = useState(20);
+  const [embedLink, setEmbedLink] = useState('');
 
   const filterURL = (url) => {
     var filterText = url.match(/(?:"[^"]*"|^[^"]*$)/)[0].replace(/"/g, "");
@@ -41,37 +48,137 @@ const App = () => {
     setSponsor(false);
 	}
 
+  const setHeaderText = (text) => {
+    const headerText = ref.current.querySelector('#header');
+    headerText.style.color = 'transparent';
+    setTimeout(() => {
+      headerText.style.color = 'black';
+      setHeader(text);
+    }, 200);
+  }
+
+  const generateLink = () => {
+    if (value.includes('youtube.com'))  {
+      setEmbedLink(`<iframe id="player" width="${sliderWidth}" height="${sliderHeight}" src="${`${value}&origin="${window.location.href}"`}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen />`);
+    } else {
+      setEmbedLink(`<iframe src="${value}" width="${sliderWidth}" height="${sliderHeight}"/>`);
+    }
+  }
+
+  const showCopySuccess = () => {
+    toast.current.show({ severity: 'success', summary: 'Embed Link Copied to Clipboard!', detail: 'Now you can paste the copied link to embed the document.', life: 3000 });
+  }
+
+  // const showCopyURLSuccess = () => {
+  //   toast.current.show({ severity: 'success', summary: 'URL Copied to Clipboard!', detail: 'Now you can paste the copied link to embed the document, or drop the link back into the input field to generate an embed link.', life: 3000 });
+  // }
+
+  // const copyItems = [
+  //   {
+  //     label: 'Copy Embed Link',
+  //     icon: 'pi pi-copy',
+  //     command: () => {
+  //       navigator.clipboard.writeText(embedLink);
+  //       showCopySuccess();
+  //     }
+  //   },
+  //   {
+  //     label: 'Copy URL Only',
+  //     icon: 'pi pi-link',
+  //     command: () => {
+  //       navigator.clipboard.writeText(value);
+  //       showCopyURLSuccess();
+  //     }
+  //   },
+  //   {
+  //     label: 'New Tab from URL',
+  //     icon: 'pi pi-external-link',
+  //     command: () => {
+  //       window.open(value, '_blank');
+  //     }
+  //   }
+
+  // ];
+
   useEffect(() => {
     if (value && value.includes('docs.google.com')) {
-      setHeader('Google Doc');
+      setHeaderText('Google Doc');
       filterURL(value);
+      setSliderWidth(800);
+      setSliderHeight(1100);
       setPosition(1);
       setValidURL(true);
     } else if (value && value.includes('sheets.google.com')) {
-      setHeader('Google Sheet');
+      setHeaderText('Google Sheet');
       filterURL(value);
+      setSliderWidth(800);
+      setSliderHeight(1100);
+      setPosition(1);
+      setValidURL(true);
+    } else if (value && value.includes('youtube.com')) {
+      setHeaderText('YouTube Embed');
+      if (window.screen.width <= 415) {
+        setSliderWidth(200);
+        setSliderHeight(100);
+      } else {
+        setSliderWidth(853);
+        setSliderHeight(480);
+      }
       setPosition(1);
       setValidURL(true);
     } else if (value !== '' && value.includes('.com') && !value.includes('docs.google.com' || 'sheets.google.com')) {
-      setHeader('Please enter a valid Google Docs or Google Sheets Embed Link');
+      setHeaderText('Please enter a valid Google Docs or Google Sheets Embed Link');
       setValidURL(false);
       setPosition(20);
     } else if (value && value.includes('.net') || value.includes('.org') || value.includes('.io' ) || value.includes('.gov') || value.includes('.edu') || value.includes('.app') || value.includes('.so') || value.includes('.me')) {
-      setHeader('Please enter a valid Google Docs or Google Sheets Embed Link');
+      setHeaderText('Please enter a valid Google Docs or Google Sheets Embed Link');
       setValidURL(false);
       setPosition(20);
     } else {
-      setHeader('Enter a Google Docs or Sheets Embed Link');
+      setHeaderText('Enter a Google Docs or Sheets Embed Link');
       setValidURL(false);
       setPosition(20);
     }
+    generateLink();
   }, [value, setValue, header, setHeader, validURL, setValidURL]);
 
   return (
-    <div className="App" style={{ top: `${position}vw` }}>
-      <h1>{header}</h1>
+    <div ref={ref} className="App" style={{ top: `${position}vw` }}>
+      <h1 id="header">{header}</h1>
       <br />
-      <div style={{ display: 'inline-flex' }}>
+      <div className={`inputArea ${(validURL) ? 'valid' : ''}`}>
+          {
+            (validURL)
+              ?
+              <span>
+                {/* <Tooltip target=".p-speeddial-semi-circle .p-speeddial-action" position="left" />
+                <SpeedDial
+                  className="p-button-raised p-button-rounded"
+                  type="semi-circle"
+                  direction='right'
+                  showIcon="pi pi-copy"
+                  label="Copy"
+                  radius={80}
+                  model={copyItems}
+                  buttonStyle={{ 
+                    padding: '10px',
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(19, 158, 254, 1)',
+                    overflow: 'visible'
+                  }}
+                /> */}
+                <Button
+                  className="p-button-raised p-button-rounded"
+                  icon="pi pi-copy"
+                  onClick={() => {
+                    navigator.clipboard.writeText(embedLink);
+                    showCopySuccess();
+                  }}
+                />
+              </span>
+            : null
+          }
         <span className='p-float-label p-input-icon-left'>
           <i className='pi pi-link' />
           <InputText
@@ -81,45 +188,52 @@ const App = () => {
             onChange={(e) => {setValue(e.target.value)}} />
             <label htmlFor='link'> Embed Link </label>
         </span>
-        <div style={{ width: '15px' }} />
-        <div>
+        <span>
           <Button
-            className='p-button-rounded'
+            className='p-button-raised p-button-rounded'
             icon="pi pi-question"
             onClick={() => onClick()}
-          />
-        </div>
+            />
+        </span>
       </div>
       <div style={{ paddingTop: '20px' }}>
         {(validURL) 
           ? <div>
-              <h5> Width: {sliderWidth} </h5>
+              <strong> Width: {sliderWidth} </strong> <br /><br />
               <Slider
                 value={sliderWidth}
                 onChange={(e) => {setSliderWidth(e.value)}}
-                min={300} 
+                min={200} 
                 max={1500}
-                step={10} 
-              />
-              <h5> Height: {sliderHeight} </h5>
+                step={10}
+                style={{ width: '80vmin' }}
+                /> 
+              <br /><br />
+              <strong> Height: {sliderHeight} </strong> <br /><br />
               <Slider
                 value={sliderHeight}
                 onChange={(e) => {setSliderHeight(e.value)}}
                 min={100}
                 max={2000}
                 step={10} 
+                style={{ width: '80vmin' }}
               />
-              <br />
-              <br />
+              <br /><br />
               <span>
-                <h5> Generated Embed Link: </h5>
-                <p className='generatedLink'>
-                  {`<iframe src="${value}" width="${sliderWidth}" height="${sliderHeight}" />`}
-                </p>
+                <h3 style={{ margin: '0px'}}> Generated Embed Link: </h3>
+                <div style={{ width: '50vmax', display: 'inline-flex'}}>
+                  <p className='generatedLink'>
+                    {embedLink}
+                  </p>
+                </div>
               </span>
-              <div>
-                <iframe src={value} width={sliderWidth} height={sliderHeight}/>
-              </div>
+              <span style={{ display: 'block' }}>
+                {
+                  (value.includes('youtube.com'))
+                    ? <YouTubeEmbed embedId={value.split('?v=')[1]} width={sliderWidth} height={sliderHeight} />
+                    : <iframe src={value} width={sliderWidth} height={sliderHeight}/>
+                }
+              </span>
             </div>
           : null}
       </div>
@@ -146,14 +260,16 @@ const App = () => {
           style={{ cursor: 'pointer' }}
           onClick={() => window.open('https://jordangamache.io', '_blank')}
         >
-          <Card
-            title="Portfolio"
-            ic
-          >
+          <Card title="Portfolio">
             jordangamache.io
           </Card>
         </div>
       </Dialog>
+      <Toast
+				ref={toast}
+				position={(window.screen.width <= 415) ? "top-center" : "top-right"}
+        style={{ width: (window.screen.width <= 415) ? '80vw' : '' }}
+			/>
       <span style={{height: "10vh"}} />
 			 <footer className="footer">
 				<div style={{ cursor: 'pointer'}} onClick={() => onSponsorClick()}>
